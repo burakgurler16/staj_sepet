@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:staj_sepet/model/api_deneme.dart';
 
 class SepetScreen extends StatefulWidget {
   const SepetScreen({Key? key}) : super(key: key);
@@ -9,6 +10,12 @@ class SepetScreen extends StatefulWidget {
 
 class _SepetScreenState extends State<SepetScreen> {
   @override
+  void initState() {
+    super.initState();
+    fetchSepet();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
@@ -17,13 +24,20 @@ class _SepetScreenState extends State<SepetScreen> {
             pageTitle(context),
             Expanded(
               child: ListView.builder(
-                itemCount: 1,
+                itemCount: 500,
                 itemBuilder: (BuildContext context, int index) {
-                  return ItemCard();
+                  return const ItemCard(
+                    urunAdi: 'kot pantül',
+                    urunRenk: 'mavi',
+                    birimFiyat: 40,
+                    adet: 8,
+                  );
                 },
               ),
             ),
-            const TotalPriceShow()
+            const TotalPriceShow(
+              totalPrice: 300,
+            )
           ],
         ),
       ),
@@ -38,13 +52,47 @@ class _SepetScreenState extends State<SepetScreen> {
   }
 }
 
-class ItemCard extends StatelessWidget {
+class ItemCard extends StatefulWidget {
   const ItemCard({
     Key? key,
+    required this.urunAdi,
+    required this.urunRenk,
+    required this.birimFiyat,
+    required this.adet,
   }) : super(key: key);
+  final String? urunAdi;
+  final String? urunRenk;
+  final double? birimFiyat;
+  final int? adet;
+
+  @override
+  State<ItemCard> createState() => _ItemCardState();
+}
+
+class _ItemCardState extends State<ItemCard> {
+  int urunAdet = 0;
+  void _urunArttir() {
+    setState(() {
+      urunAdet++;
+    });
+  }
+
+  void _urunAzalt() {
+    setState(() {
+      urunAdet > 0 ? urunAdet-- : null;
+    });
+
+    void _toplamTutar(int adet, double fiyat) {
+      double toplam = 0;
+      setState(() {
+        toplam = adet * fiyat;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    double urunToplamFiyat = widget.birimFiyat! * urunAdet;
     return Card(
       margin: ProjectMargins.cardMargin,
       child: SizedBox(
@@ -60,13 +108,13 @@ class ItemCard extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Text(
-                    'burada bir başlık olabilirrrr',
-                    style: TextStyle(overflow: TextOverflow.ellipsis, fontWeight: FontWeight.bold),
+                    '${widget.urunAdi}',
+                    style: const TextStyle(overflow: TextOverflow.ellipsis, fontWeight: FontWeight.bold),
                   ),
-                  Text('Renk: Mavi'),
-                  Text('Birim Fiyatı: 60')
+                  Text('Renk: ${widget.urunRenk}'),
+                  Text('Birim Fiyatı: ${widget.birimFiyat}')
                 ],
               ),
             ),
@@ -74,21 +122,21 @@ class ItemCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    IconButton(onPressed: () {}, icon: const Icon(Icons.remove_circle)),
-                    const Text('Adet : 5'),
-                    IconButton(onPressed: () {}, icon: const Icon(Icons.add_circle)),
+                    IconButton(onPressed: _urunAzalt, icon: const Icon(Icons.remove_circle)),
+                    Text('Adet : $urunAdet'),
+                    IconButton(onPressed: _urunArttir, icon: const Icon(Icons.add_circle)),
                   ],
                 ),
-                const Text(
-                  '300₺',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                Text(
+                  '$urunToplamFiyat',
+                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 )
               ],
             )
           ]),
         ),
       ),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: ProjectMargins.roundedRectangleBorder,
     );
   }
 }
@@ -96,7 +144,10 @@ class ItemCard extends StatelessWidget {
 class TotalPriceShow extends StatelessWidget {
   const TotalPriceShow({
     Key? key,
+    required this.totalPrice,
   }) : super(key: key);
+
+  final double? totalPrice;
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +158,7 @@ class TotalPriceShow extends StatelessWidget {
       child: Column(
         children: [
           const Text('Toplam Sepet Tutarı'),
-          Text('3000₺',
+          Text('$totalPrice ₺',
               style: Theme.of(context).textTheme.headline3?.copyWith(color: Colors.black, fontWeight: FontWeight.bold),
               textAlign: TextAlign.end)
         ],
@@ -122,8 +173,5 @@ class ProjectMargins {
 }
 
 class PaddindUtility {
-  final paddingTop = const EdgeInsets.only(top: 10);
-  final paddinBottom = const EdgeInsets.only(bottom: 20);
   final paddingGeneral = const EdgeInsets.all(8);
-  final paddingHorizontal = const EdgeInsets.symmetric(horizontal: 20);
 }
