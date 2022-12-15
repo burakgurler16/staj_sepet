@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:staj_sepet/json_place_holder/json_place_holder.dart';
@@ -13,7 +12,7 @@ abstract class JsonPlaceHolderViewModel extends State<JsonPlaceHolder> {
   bool isLoading = false;
   String errorMessage = '';
 
-  List<SepetItems>? sepetItems = [];
+  List<Sepet>? sepetItems = [];
   Future<void> fetchSepet() async {
     final response = await http.get(
       Uri.parse('$baseUrl$getPath'),
@@ -28,7 +27,7 @@ abstract class JsonPlaceHolderViewModel extends State<JsonPlaceHolder> {
       print(jsonDecode(response.body));
       final jsonBody = jsonDecode(response.body);
       if (jsonBody is List) {
-        sepetItems = jsonBody.map((e) => SepetItems.fromJson(e)).toList();
+        sepetItems = jsonBody.map((e) => Sepet.fromJson(e)).toList();
       }
 
       showDialog(

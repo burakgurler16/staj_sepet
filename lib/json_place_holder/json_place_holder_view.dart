@@ -22,7 +22,7 @@ class JsonPlaceHolderView extends JsonPlaceHolderViewModel {
             padding: const EdgeInsets.all(8.0),
             child: Card(
                 color: Colors.amber,
-                child: Text(sepetItems?[index].name ?? 'name null')),
+                child: Text(sepetItems?[index].id.toString() ?? 'name null')),
           );
         },
       ),
